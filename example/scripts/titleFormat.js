@@ -1,19 +1,22 @@
-function titleFormat(str) {
-    // Obtener la primera letra y el resto del título
-    let firstLetter = str.charAt(0).toUpperCase(); // Primera letra en mayúsculas
-    let restOfTitle = str.slice(1).toLowerCase(); // Resto del título en minúsculas
+function titleFormat(cadena) {
+  if (cadena === "") {
+    return "Invalid input";
+  }
 
-    // Concatenar ambas partes
-    let formattedTitle = firstLetter + restOfTitle;
+  // Cortar la cadena en primera letra y resto del título
+  const firstLetter = cadena.charAt(0).toUpperCase();
+  const restOfTitle = cadena.slice(1).toLowerCase();
 
-    // Mostrar el título formateado en la consola
-    console.log(formattedTitle);
+  // Concatenar ambas partes
+  const formattedTitle = firstLetter + restOfTitle;
 
-    // Retornar la longitud de la cadena formateada
-    return formattedTitle.length;
+  // Retornar la cadena
+  //return formattedTitle.length;
+  return formattedTitle;
 }
 
-// Ejecutar la función y mostrar los resultados en consola
-console.log(titleFormat("javascript")); // Output: "Javascript", 10
-console.log(titleFormat("hello WORLD")); // Output: "Hello world", 11
-console.log(titleFormat("tITLE cAsE")); // Output: "Title case", 10
+// Muestra de resultados en la consola
+console.log(titleFormat("hello, world!"));
+console.log(titleFormat(""));
+console.log(titleFormat("HELLO world"));
+console.log(titleFormat("HellO WOrLd"));
