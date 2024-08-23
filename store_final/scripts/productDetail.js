@@ -1,124 +1,144 @@
-const query = location.search
-const parametro = new URLSearchParams(query)
-const id = parametro.get("id")
-console.log(id)
+// Capturar el parámetro id de la URL
+/*const query = location.search;
+const params = new URLSearchParams(query);
+const id = params.get("id");
+console.log(id);*/
 
-function createDetail(product) {
-return `
-<div div id = "details" class="columns-container" >
-<section class="product-images-block">
-<div class="product-images">
-<img class="mini-img" src="${product.imageSrc}" alt="${product.title}" />
-<img class="mini-img" src="https://i.postimg.cc/Y91Q1tYQ/mock2.jpg" alt="${product.title}" />
-</div>
-<img class="big-img" id="big-img" src="${product.imageSrc}" alt="${product.title}" />
-</section>
-<div class="product-description-block">
-<h1 class="product-title">${product.title}</h1>
-<form class="product-selector">
-<fieldset class="product-fieldset">
-<label class="product-label" for="color">Color</label>
-<select class="product-select" type="text" placeholder="Selecciona un color" id="color">
-${product.colors.map(
-(c) => <option value="${c}">${c}</option>
-).join("")}
-</select>
-</fieldset>
-</form>
-<div class="product-description">
-<span class="product-label">Descripción</span>
-<p>
-Experience the power of creativity with the ${product.title}.
-Featuring 8GB of RAM and 512GB of storage, this laptop provides
-the performance and storage capacity needed for demanding tasks.
-The sleek design in ${product.description} and space gray adds a touch of
-sophistication. The high-resolution Retina display brings your
-visuals to life, whether you're editing photos, creating videos,
-or simply browsing the web. With the latest technology and a
-lightweight build, the ${product.title} is the perfect companion
-for professionals and creative individuals alike.
-</p>
-</div>
-</div>
-<div class="product-checkout-block">
-<div class="checkout-container">
-<span class="checkout-total-label">Total:</span>
-<h2 id="price" class="checkout-total-price">${product.price}</h2>
-<span class="product-discount">${product.discount}</span>
-<p class="checkout-description">
-Incluye impuesto PAIS y percepción AFIP. Podés recuperar AR$
-50711 haciendo la solicitud en AFIP.
-</p>
-<ul class="checkout-policy-list">
-<li>
-<span class="policy-icon"><img src="./assets/truck.png" alt="Truck" /></span>
-<span class="policy-desc">Agrega el producto al carrito para conocer los costos de
-envío</span>
-</li>
-<li>
-<span class="policy-icon"><img src="./assets/plane.png" alt="Plane" /></span>
-<span class="policy-desc">Recibí aproximadamente entre 10 y 15 días hábiles,
-seleccionando envío normal</span>
-</li>
-</ul>
-<div class="checkout-process">
-<div class="top">
-<input type="number" min="1" value="1" />
-<button type="button" class="cart-btn">
-Añadir al Carrito
-</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sales-block">
-<h2 class="sales-title">Ofertas de la semana</h2>
-<div id="product-container" class="product-container">
-
-</div>
-</div>
-`
+// Definir la función createCard
+function createCard(productDetails) {
+  return `
+        <a class="product-card" href="../html/details.html?id=${productDetails.id}">
+          <img class="product-img" src="${productDetails.imgSrc}" alt="${productDetails.title}" />
+          <div class="product-info">
+            <span class="product-title">${productDetails.title}</span>
+            <span class="product-description">${productDetails.description}</span>
+            <div class="product-price-block">
+              <span class="price">${productDetails.price}</span>
+              <span class="discount">${productDetails.discount}</span>
+            </div>
+            <div class="product-tax-policy">
+              ${productDetails.taxPolicy}
+            </div>
+          </div>
+        </a>
+      `;
 }
 
-const createSide = (products) => {
-i = 1
-let content = "";
-products.forEach(product => {
-if (i <= 3 && product.id != id) {
-let p = `<a class="product-card" href="./details.html?id=${product.id}">
-<img class="product-img" src="${product.imageSrc} alt="${product.title}" />
-<div class="product-info">
-<span class="product-title">${product.title}</span>
-<span class="product-description">${product.description}</span>
-<div class="product-price-block">
-<span class="product-price">${product.price}</span>
-<span class="product-discount">${product.discount}</span>
-</div>
-<div class="product-tax-policy">
-Incluye impuesto País y percepción AFIP
-</div>
-</div>
-</a>`
-content += p;
-i++;
-}
-});
-return content
+function printCards(arrayOfProducts, idSelector) {
+  let productsTemplate = "";
+  for (const element of arrayOfProducts) {
+    productsTemplate += createCard(element);
+  }
+  const productsSelector = document.getElementById(idSelector);
+  productsSelector.innerHTML = productsTemplate;
 }
 
-
-function printDetails(products) {
-const main = document.querySelector('.details-container')
-const product = products.find(p => p.id === id)
-const productMain = createDetail(product)
-main.innerHTML = productMain;
+// Función para cambiar la imagen principal al hacer click en una miniatura
+function changeMini(event) {
+  const selectedSrc = event.target.src;
+  const bigSelector = document.querySelector("#bigImg");
+  bigSelector.src = selectedSrc;
 }
 
-
-function printSide(products) {
-const side = document.querySelector('#product-container')
-const productsSide = createSide(products)
-console.log(productsSide)
-side.innerHTML = productsSide
+// Función para actualizar el subtotal al cambiar la cantidad
+function changeSubtotal(event, productId) {
+  const quantity = parseInt(event.target.value, 10);
+  const product = products.find((each) => each.id === productId);
+  const subtotal = product.price * quantity;
+  const subtotalLabel = document.querySelector("#subtotal");
+  subtotalLabel.textContent = `$${subtotal.toFixed(2)}`;
 }
+
+// Definir la función printDetails
+function printDetails(id) {
+  console.log(`ID Product: ${id}`);
+
+  const product = products.find((each) => each.id === id);
+
+  const thumbnailImages = product.images.map((images) => `
+    <div class="thumbnail-container">
+      <img src="${images}" alt="${product.title}" onclick="changeMini(event)" />
+    </div>
+  `).join("");
+
+  const detailsTemplate = `
+    <div class="product-images-block">
+      <div class="product-images-miniaturas">
+        ${thumbnailImages}            
+      </div>
+      <div class="product-image-principal">
+        <img id="bigImg" src="${product.imgSrc}" alt="Macbook Pro 15" />
+      </div>
+    </div>
+    <div class="product-description-block">
+      <h1 class="product-title">${product.title}</h1>
+      <div class="product-options">
+        <form class="selector">
+          <fieldset>
+            <legend>Opciones del Producto</legend>
+            <label class="label" for="color">Color:</label>
+            <select id="color" name="color">
+              ${product.color.map((color) => `<option value="${color}">${color}</option>`).join("")}
+            </select>
+          </fieldset>
+        </form>
+      </div>
+      <div class="detailed-description" style="margin-top: 20px;">
+        <span class="section-title">Descripción</span>
+        <p>${product.descriptionGeneral}</p>
+        <p>Además, puedes hablar sobre la historia del producto, los materiales con los que está hecho</p>
+      </div>
+    </div>
+    <div class="product-checkout-block">
+      <div class="checkout-container">
+        <span class="checkout-total-label">Total:</span>
+        <h2 class="checkout-total-price">$152.400</h2>
+        <p class="checkout-description">
+          Incluye impuesto PAIS y percepción AFIP. Podés recuperar AR$ 50711
+          haciendo la solicitud en AFIP.
+        </p>
+        <ul class="checkout-policy-list">
+          <li>
+            <span class="policy-icon">
+              <img src="../img/truck.png" alt="Truck" />
+            </span>
+            <span class="policy-desc">Agrega el producto al carrito para conocer los costos de
+              envío</span>
+          </li>
+          <li>
+            <span class="policy-icon">
+              <img src="../img/plane.png" alt="Plane" />
+            </span>
+            <span class="policy-desc">Recibí aproximadamente entre 10 y 15 días hábiles,
+              seleccionando envío normal</span>
+          </li>
+        </ul>
+        <div class="checkout-process">
+          <div class="top">
+            <input type="number" value="1" min="1" max="10" step="1" onchange="changeSubtotal(event, '${product.id}')" />
+            <button class="btn-primary">Añadir al Carrito</button>
+          </div>
+          <div class="subtotal">
+            <span>Subtotal: </span><span id="subtotal">$${product.price.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  const detailsSelector = document.querySelector("#details");
+  if (!detailsSelector) {
+    console.error("Elemento con id 'details' no encontrado en el DOM");
+    return;
+  }
+  detailsSelector.innerHTML = detailsTemplate;
+}
+
+// Obtener el id del producto de los parámetros de la URL
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+if (id) {
+  printDetails(id);
+}
+
+// Invocar la función printCards con el array de productos y el id del selector
+printCards(productDetails, "products");
