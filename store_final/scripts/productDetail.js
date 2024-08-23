@@ -1,8 +1,6 @@
 // Capturar el parámetro id de la URL
-/*const query = location.search;
-const params = new URLSearchParams(query);
+const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
-console.log(id);*/
 
 // Definir la función createCard
 function createCard(productDetails) {
@@ -67,7 +65,7 @@ function printDetails(id) {
         ${thumbnailImages}            
       </div>
       <div class="product-image-principal">
-        <img id="bigImg" src="${product.imgSrc}" alt="Macbook Pro 15" />
+        <img id="bigImg" src="${product.imgSrc}" alt="${product.title}" />
       </div>
     </div>
     <div class="product-description-block">
@@ -77,7 +75,7 @@ function printDetails(id) {
           <fieldset>
             <legend>Opciones del Producto</legend>
             <label class="label" for="color">Color:</label>
-            <select id="color" name="color">
+            <select id="color-${product.id}" name="color">
               ${product.color.map((color) => `<option value="${color}">${color}</option>`).join("")}
             </select>
           </fieldset>
@@ -92,7 +90,7 @@ function printDetails(id) {
     <div class="product-checkout-block">
       <div class="checkout-container">
         <span class="checkout-total-label">Total:</span>
-        <h2 class="checkout-total-price">$152.400</h2>
+        <h2 class="checkout-total-price">${product.price.toFixed(2)}</h2>
         <p class="checkout-description">
           Incluye impuesto PAIS y percepción AFIP. Podés recuperar AR$ 50711
           haciendo la solicitud en AFIP.
@@ -115,8 +113,8 @@ function printDetails(id) {
         </ul>
         <div class="checkout-process">
           <div class="top">
-            <input type="number" value="1" min="1" max="10" step="1" onchange="changeSubtotal(event, '${product.id}')" />
-            <button class="btn-primary">Añadir al Carrito</button>
+            <input id="quantity-${product.id}" type="number" value="1" min="1" max="10" step="1" onchange="changeSubtotal(event, '${product.id}')" />
+            <button class="btn-primary" onclick="saveProduct('${product.id}')">Añadir al Carrito</button>
           </div>
           <div class="subtotal">
             <span>Subtotal: </span><span id="subtotal">$${product.price.toFixed(2)}</span>
@@ -133,11 +131,51 @@ function printDetails(id) {
   detailsSelector.innerHTML = detailsTemplate;
 }
 
-// Obtener el id del producto de los parámetros de la URL
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
 if (id) {
   printDetails(id);
+}
+
+// Función para guardar un producto en el carrito
+function saveProduct(id) {
+  const found = products.find((each) => each.id === id);
+  
+  if (!found) {
+      console.error('Producto no encontrado');
+      return;
+  }
+  
+  const product = {
+      id: id,
+      title: found.title,
+      price: found.price,
+      image: found.images[0],
+      color: document.querySelector("#color-" + id).value,
+      quantity: document.querySelector("#quantity-" + id).value,
+  };
+  
+  // Obtener el carrito del localStorage, si existe
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+  // Verificar si el producto ya está en el carrito
+  const existingProductIndex = cart.findIndex(item => item.id === id && item.color === product.color);
+  
+  if (existingProductIndex >= 0) {
+      // Si el producto ya existe en el carrito, actualizar la cantidad
+      cart[existingProductIndex].quantity = parseInt(cart[existingProductIndex].quantity, 10) + parseInt(product.quantity, 10);
+  } else {
+      // Si el producto no está en el carrito, agregarlo
+      cart.push(product);
+  }
+  
+  // Guardar el carrito actualizado en el localStorage
+  localStorage.setItem("cart", JSON.stringify(cart));
+  
+  console.log("Producto guardado en el carrito:", product);
+
+  // Actualizar la vista del carrito
+  if (document.getElementById('cart-container').style.display === 'block') {
+      displayCart();
+  }
 }
 
 // Invocar la función printCards con el array de productos y el id del selector

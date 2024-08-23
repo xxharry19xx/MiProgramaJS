@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css..." />
     <link rel="stylesheet" href="../css/details.css" />
+    <link rel="stylesheet" href="../css/cart.css" />
 
     <link rel="icon" type="image/svg" href="../img/tiendamia-logo.svg">
 </head>
@@ -26,8 +27,29 @@
                 <div class="social">
                     <a><img src="../img/facebook.png" alt="Facebook"></a>
                     <a><img src="../img/instagram.png" alt="Instagram"></a>
+                    <!-- <a href="cart.html"><img src="../img/instagram.png" alt="Carrito">carrito</a> -->
                 </div>
+                
+            <!-- Ícono para abrir el carrito -->
+                <div id="cart-icon" style="cursor: pointer;">
+                    <img src="../img/carrito.png" alt="Carrito" />
+                </div>
+
             </div>
+
+
+
+
+            <!-- Contenedor para mostrar el carrito -->
+            <div id="cart-container" style="display: none;">
+                <div id="cart-header">
+                    <h2>Tu Carrito</h2>
+                    <button id="refresh-cart" class="btn-secondary"></button>
+                    <button id="close-cart" style="border: none; background: black; font-size: 1.5em;">&times;</button>
+                </div>
+                <div id="cart-items"></div>
+            </div>
+
             <div class="nav">
                 <ul>
                     <li><a href="#">Ofertas de la semana</a></li>
@@ -236,6 +258,7 @@
     <script src="../scripts/layout.js"></script>
     <script src="../scripts/products.js"></script>
     <script src="../scripts/productDetail.js"></script>
+    <script src="../scripts/cart.js"></script>
 </body>
 
 </html>
